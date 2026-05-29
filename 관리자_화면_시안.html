@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자(백오피스) 디자인 시안 — 굿투리뷰 / 네오리뷰</title>
+<style>
+  :root{
+    --navy:#13233f; --navy2:#0d1827; --green:#0a8a52; --green-d:#0a7345; --green2:#19b76e;
+    --gtint:#e9f5ee; --ink:#1b2330; --sub:#5d6776; --line:#e6e9ef; --bg:#f1f3f7;
+    --shadow:0 6px 22px rgba(19,35,63,.07); --shadow-sm:0 2px 10px rgba(19,35,63,.05);
+    --amber:#d98a1a; --red:#d63a3a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+       color:var(--ink);background:#dfe3ea;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .ribbon{background:var(--navy2);color:#cfe6da;text-align:center;font-size:13px;padding:8px;}
+  .ribbon b{color:#5fd6a0;}
+  .frame{max-width:1280px;margin:18px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 14px 50px rgba(19,35,63,.16);}
+
+  .app{display:flex;min-height:760px;}
+  /* sidebar */
+  .side{width:216px;background:var(--navy);color:#fff;flex-shrink:0;padding-bottom:20px;}
+  .side .brand{display:flex;align-items:center;gap:8px;padding:20px 20px 18px;font-size:18px;font-weight:900;letter-spacing:-.5px;}
+  .side .brand .pear{width:20px;height:20px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,var(--green2),var(--green));transform:rotate(-12deg);}
+  .side .grp{font-size:11.5px;color:#6f8099;font-weight:700;padding:14px 20px 6px;letter-spacing:.4px;}
+  .side .nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;color:#aebccd;font-weight:600;font-size:14.5px;border-left:3px solid transparent;}
+  .side .nav a .em{width:18px;text-align:center;}
+  .side .nav a:hover{background:rgba(255,255,255,.05);color:#fff;}
+  .side .nav a.on{background:rgba(25,183,110,.14);color:#fff;border-color:var(--green2);}
+  /* main */
+  .main{flex:1;background:var(--bg);min-width:0;display:flex;flex-direction:column;}
+  .topbar{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+  .topbar h1{font-size:18px;margin:0;font-weight:800;}
+  .topbar .sp{margin-left:auto;display:flex;align-items:center;gap:14px;color:var(--sub);font-size:14px;}
+  .topbar .me{font-weight:700;color:var(--ink);}
+  .content{padding:22px 24px;overflow:auto;}
+  .ascreen{display:none;} .ascreen.on{display:block;}
+
+  /* common bits */
+  .imp{display:inline-block;background:var(--gtint);color:var(--green-d);border:1px solid #c7e6d5;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;vertical-align:middle;margin-left:6px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);}
+  .card .hd{padding:15px 18px;border-bottom:1px solid var(--line);font-weight:800;font-size:15.5px;display:flex;align-items:center;gap:6px;}
+  .card .bd{padding:18px;}
+  .row{display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{border:0;border-radius:9px;padding:9px 15px;font-size:14px;font-weight:700;}
+  .btn.g{background:var(--green);color:#fff;} .btn.n{background:var(--navy);color:#fff;}
+  .btn.o{background:#fff;border:1px solid #cfd5de;color:#46505f;} .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:7px;}
+  .chip{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:7px;}
+  .c-run{background:var(--gtint);color:var(--green-d);} .c-wait{background:#fff3e2;color:#b9760e;}
+  .c-done{background:#eef1f6;color:#56606e;} .c-live{background:#e7f0ff;color:#2861c4;} .c-stop{background:#fdeaea;color:#c0392b;} .c-hide{background:#eceef2;color:#8a93a0;}
+
+  table.t{width:100%;border-collapse:collapse;font-size:13.5px;}
+  table.t th{background:#f5f7f9;color:#46505f;text-align:left;font-weight:700;padding:11px 12px;border-bottom:2px solid #e6eaef;white-space:nowrap;}
+  table.t td{padding:11px 12px;border-bottom:1px solid #eef1f5;}
+  table.t tr.sel td{background:#eafaf1;}
+  .ck{width:16px;height:16px;border:1.5px solid #b8c0cc;border-radius:4px;display:inline-block;vertical-align:middle;}
+  .ck.on{background:var(--green);border-color:var(--green);position:relative;}
+  .ck.on::after{content:"✓";color:#fff;font-size:11px;position:absolute;left:2px;top:-2px;}
+  .cno{font-weight:800;color:var(--green-d);}
+
+  /* dashboard */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px;}
+  @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr);}}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow-sm);}
+  .kpi .k{font-size:13px;color:var(--sub);} .kpi .v{font-size:25px;font-weight:900;margin-top:4px;color:var(--navy);}
+  .kpi .v.g{color:var(--green-d);} .kpi .v.a{color:var(--amber);}
+  .rank{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:10px;background:#fff;}
+  .rank .grip{color:#b8c0cc;cursor:grab;font-size:17px;} .rank .pos{font-weight:900;color:var(--navy);width:22px;text-align:center;}
+  .rank .nm{font-weight:700;} .rank .ctrl{margin-left:auto;display:flex;gap:6px;align-items:center;}
+  .arrow{width:26px;height:26px;border:1px solid #d6dbe2;border-radius:7px;background:#fff;color:#56606e;font-size:12px;}
+
+  /* filter bar */
+  .filter{display:grid;grid-template-columns:repeat(4,auto 1fr);gap:10px 12px;align-items:center;}
+  @media(max-width:1100px){.filter{grid-template-columns:auto 1fr auto 1fr;}}
+  .filter .fl{font-size:13px;color:var(--sub);font-weight:600;white-space:nowrap;}
+  .filter .fi{border:1px solid #d6dbe2;border-radius:8px;padding:8px 10px;font-size:13.5px;color:#46505f;background:#fff;width:100%;}
+  .ftabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap;align-items:center;}
+  .ftabs .tb{border:1px solid #d6dbe2;background:#fff;color:#56606e;padding:8px 15px;border-radius:9px;font-size:13.5px;font-weight:700;}
+  .ftabs .tb.on{background:var(--green);border-color:var(--green);color:#fff;}
+  .ftabs .save{margin-left:auto;border-style:dashed;color:var(--green-d);border-color:#bfe0cf;background:var(--gtint);}
+
+  /* form (registration) */
+  .reg{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;}
+  @media(max-width:1100px){.reg{grid-template-columns:1fr;}}
+  .sec{margin-bottom:16px;}
+  .sec .hd .num{width:24px;height:24px;border-radius:7px;background:var(--gtint);color:var(--green-d);font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-right:4px;}
+  .field{margin-bottom:14px;} .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:13.5px;font-weight:700;margin-bottom:6px;}
+  .field label .rq{color:var(--red);margin-left:3px;}
+  .field .inp,.field select,.field textarea{width:100%;border:1px solid #d6dbe2;border-radius:9px;padding:11px 12px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .field textarea{min-height:74px;resize:vertical;}
+  .field .help{font-size:12px;color:var(--sub);margin-top:5px;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;} .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .urlbox{display:flex;gap:8px;} .urlbox .inp{flex:1;}
+  .seg{display:flex;gap:8px;flex-wrap:wrap;}
+  .seg span{border:1px solid #d6dbe2;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:#56606e;background:#fff;}
+  .seg span.on{background:var(--gtint);border-color:#bfe0cf;color:var(--green-d);}
+  .sticky{position:sticky;top:10px;}
+  /* preview card */
+  .pv{border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .pv .th{aspect-ratio:4/3;background:linear-gradient(135deg,#b9d2c2,#9cc1ac);position:relative;}
+  .pv .bd{position:absolute;top:10px;left:10px;display:flex;gap:5px;} .pv .bd span{font-size:11px;font-weight:700;color:#fff;padding:2px 8px;border-radius:6px;background:rgba(19,35,63,.82);} .pv .bd .ev{background:var(--green);}
+  .pv .hrt{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;color:var(--green);}
+  .pv .dd{position:absolute;left:10px;bottom:10px;background:rgba(255,255,255,.95);color:var(--navy);font-weight:800;font-size:11px;padding:3px 8px;border-radius:7px;}
+  .pv .info{padding:13px 14px;} .pv .info .tt{font-weight:700;font-size:14px;} .pv .info .mt{font-size:12px;color:var(--sub);margin-top:5px;}
+  .pv .bar{height:6px;border-radius:6px;background:#eef0ee;margin:10px 0 7px;overflow:hidden;} .pv .bar i{display:block;height:100%;background:var(--green);width:0%;}
+  .pv .pr{display:flex;justify-content:space-between;align-items:center;} .pv .pr .pay{font-weight:800;color:var(--green-d);}
+
+  /* receipt review */
+  .rev{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;}
+  @media(max-width:1100px){.rev{grid-template-columns:1fr;}}
+  .receipt{aspect-ratio:3/4;max-height:420px;background:repeating-linear-gradient(180deg,#f4f5f7,#f4f5f7 22px,#eceef1 22px,#eceef1 23px);border:1px solid var(--line);border-radius:12px;position:relative;}
+  .receipt .zoom{position:absolute;bottom:10px;right:10px;display:flex;gap:6px;}
+  .receipt .zoom span{width:30px;height:30px;border-radius:8px;background:rgba(19,35,63,.85);color:#fff;display:flex;align-items:center;justify-content:center;}
+  .match{font-size:14px;} .match .li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);} .match .li b{color:var(--ink);}
+  .note{padding:11px 15px;background:#f5fbf7;border:1px solid #d2e9dc;border-radius:11px;color:var(--green-d);font-size:13px;margin-bottom:16px;}
+
+  /* todo widget */
+  .todo{flex:1;min-width:190px;text-align:left;background:#f7f9fb;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;cursor:pointer;}
+  .todo:hover{background:var(--gtint);border-color:#c7e6d5;}
+  .todo b{font-size:17px;color:var(--navy);} .todo b .u{color:var(--amber);} .todo span{font-size:12.5px;color:var(--sub);}
+  /* toolbar */
+  .toolbar{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:14px;box-shadow:var(--shadow-sm);flex-wrap:wrap;}
+  .toolbar .save-ind{margin-left:auto;font-size:12.5px;color:var(--green-d);}
+  .bulkbar{display:flex;gap:8px;align-items:center;background:var(--navy);color:#fff;border-radius:11px;padding:10px 14px;margin-bottom:12px;flex-wrap:wrap;}
+  .bulkbar .cnt{font-weight:800;} .bulkbar .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .bulkbar .bb{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:700;}
+  .bulkbar .bb.g{background:var(--green);border-color:var(--green);}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(13,24,40,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+  .modal.on{display:flex;}
+  .modal .box{background:#fff;border-radius:16px;width:600px;max-width:96vw;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.35);}
+  .modal .mh{padding:16px 20px;border-bottom:1px solid var(--line);font-weight:800;font-size:16px;display:flex;align-items:center;}
+  .modal .mh .x{margin-left:auto;cursor:pointer;color:var(--sub);font-size:20px;}
+  .modal .mb{padding:18px 20px;}
+  .modal .mf{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;}
+  .tg{display:inline-flex;align-items:center;gap:9px;background:var(--gtint);border:1px solid #c7e6d5;border-radius:10px;padding:10px 14px;font-weight:700;color:var(--green-d);font-size:14px;}
+  .tg .sw{width:38px;height:22px;border-radius:999px;background:var(--green);position:relative;}
+  .tg .sw::after{content:"";position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;}
+</style>
+</head>
+<body>
+<div class="ribbon">🎨 <b>관리자(백오피스) 디자인 시안</b> · 좌측 메뉴로 화면 전환 · 초록 <span style="color:#5fd6a0;font-weight:800;">개선 #N</span> 태그 = 반영된 요청 · 데이터는 예시</div>
+
+<div class="frame"><div class="app">
+  <aside class="side">
+    <div class="brand"><span class="pear"></span>굿투리뷰 <span style="font-size:11px;color:#6f8099;font-weight:700;">관리자</span></div>
+    <div class="grp">운영</div>
+    <nav class="nav">
+      <a data-s="dash" class="on"><span class="em">▦</span> 대시보드</a>
+      <a data-s="new"><span class="em">＋</span> 캠페인 등록</a>
+      <a data-s="camp"><span class="em">▤</span> 캠페인 관리</a>
+      <a data-s="review"><span class="em">✓</span> 리뷰 승인</a>
+    </nav>
+    <div class="grp">회원 · 문의</div>
+    <nav class="nav">
+      <a data-s="member"><span class="em">◍</span> 리뷰어 관리</a>
+      <a data-s="qna"><span class="em">✉</span> 1:1 문의</a>
+    </nav>
+    <div class="grp">기타</div>
+    <nav class="nav">
+      <a style="opacity:.55;"><span class="em">₩</span> 정산</a>
+      <a style="opacity:.55;"><span class="em">⚙</span> 설정</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar"><h1 id="ptitle">대시보드</h1>
+      <div class="sp"><span>🔍 통합검색</span><span>🔔</span><span class="me">화유인 HYEON.30</span></div>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="ascreen on" id="dash">
+        <div class="kpis">
+          <div class="kpi"><div class="k">승인 대기</div><div class="v a">7</div></div>
+          <div class="kpi"><div class="k">진행중 캠페인</div><div class="v">51</div></div>
+          <div class="kpi"><div class="k">오늘 리뷰</div><div class="v g">181</div></div>
+          <div class="kpi"><div class="k">오늘 참여</div><div class="v">509</div></div>
+          <div class="kpi"><div class="k">답변 대기 문의</div><div class="v a">12</div></div>
+        </div>
+        <div class="card" style="margin-bottom:18px;"><div class="hd">오늘 할 일 <span style="font-size:12px;color:var(--sub);font-weight:600;">· 클릭하면 해당 화면으로 바로 이동</span></div>
+          <div class="bd" style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="todo" onclick="go('review')"><b>승인 대기 <span class="u">7건</span></b><span>리뷰·영수증 승인하기 →</span></button>
+            <button class="todo" onclick="go('qna')"><b>문의 답변 <span class="u">12건</span></b><span>1:1 문의 회신하기 →</span></button>
+            <button class="todo" onclick="go('camp')"><b>마감 임박 3건</b><span>모집 마감 임박 캠페인 점검 →</span></button>
+            <button class="todo" onclick="go('new')"><b>＋ 새 캠페인</b><span>캠페인 등록하기 →</span></button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="card" style="flex:1;min-width:380px;">
+            <div class="hd">상품 노출 순위 관리 <span class="imp">개선 #8</span></div>
+            <div class="bd">
+              <div style="font-size:13px;color:var(--sub);margin-bottom:12px;">노출 기준: <b style="color:var(--ink)">노출가중치 + 최신순</b> · 드래그 또는 ▲▼로 순서를 바꾸고 상단 고정할 수 있습니다.</div>
+              <div class="rank"><span class="grip">⠿</span><span class="pos">1</span><span class="nm">티나는마케팅 네일 케어 세트</span><span class="ctrl"><span class="chip c-run">상단고정</span><button class="arrow">▲</button><button class="arrow">▼</button></span></div>
+              <div class="rank"><span class="grip">⠿</span><span class="pos">2</span><span class="nm">박준성 감자 간편 밀키트</span><span class="ctrl"><button class="btn o sm">상단고정</button><button class="arrow">▲</button><button class="arrow">▼</button></span></div>
+              <div class="rank"><span class="grip">⠿</span><span class="pos">3</span><span class="nm">우노헬스케어 바디 클렌저</span><span class="ctrl"><button class="btn o sm">상단고정</button><button class="arrow">▲</button><button class="arrow">▼</button></span></div>
+            </div>
+          </div>
+          <div class="card" style="width:300px;">
+            <div class="hd">빠른 작업</div>
+            <div class="bd" style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn g" onclick="go('new')">＋ 새 캠페인 등록</button>
+              <button class="btn o" onclick="go('review')">리뷰 승인하기 (7)</button>
+              <button class="btn o" onclick="go('qna')">문의 답변하기 (12)</button>
+              <button class="btn o" onclick="go('camp')">캠페인 관리</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAMPAIGN REGISTER -->
+      <div class="ascreen" id="new">
+        <div class="toolbar">
+          <button class="btn o sm">📋 이전 캠페인 복제 불러오기</button>
+          <button class="btn o sm">⬆ 엑셀 일괄 등록</button>
+          <button class="btn o sm">🔖 템플릿 저장</button>
+          <span class="save-ind">✅ 자동 임시저장됨 · 방금</span>
+        </div>
+        <div class="note">✏️ 한 화면에서 단계별로 입력하고 <b>오른쪽 미리보기</b>로 리뷰어에게 보일 모습을 실시간 확인합니다. 상품 URL만 붙여넣으면 상품정보·번호를 자동으로 불러옵니다. <span class="imp" style="margin-left:0;">개선 #16</span></div>
+        <div class="reg">
+          <div>
+            <div class="card sec"><div class="hd"><span class="num">1</span> 기본 정보</div><div class="bd">
+              <div class="field"><label>캠페인명 <span class="rq">*</span></label><input class="inp" value="다잇 7단 노트북 거치대 — 높이조절 스탠드"></div>
+              <div class="g3">
+                <div class="field"><label>품목 카테고리 <span class="rq">*</span></label><select><option>디지털</option><option>식품</option><option>뷰티</option><option>생활</option></select></div>
+                <div class="field"><label>배송 유형 <span class="rq">*</span></label><select><option>실배송</option><option>방문형</option><option>예약자리뷰</option><option>별점</option></select></div>
+                <div class="field"><label>리뷰 유형 <span class="rq">*</span></label><select><option>포토리뷰</option><option>일반리뷰</option></select></div>
+              </div>
+            </div></div>
+
+            <div class="card sec"><div class="hd"><span class="num">2</span> 스토어 · 상품 <span class="imp">개선 #16</span></div><div class="bd">
+              <div class="field"><label>상품 URL 붙여넣기 <span class="rq">*</span></label>
+                <div class="urlbox"><input class="inp" value="https://www.coupang.com/vp/products/812345601"><button class="btn n">불러오기</button></div>
+                <div class="help">✅ 상품 URL 기준으로 자동 매핑 — 쿠팡 상품번호가 바뀌어도 자동 감지·갱신됩니다(수기 수정 불필요).</div></div>
+              <div class="g2">
+                <div class="field"><label>스토어</label><select><option>쿠팡</option><option>네이버</option></select></div>
+                <div class="field"><label>상품번호(자동)</label><input class="inp" value="812345601 · 자동연결" readonly style="background:#f4f6f9;color:#6a7585;"></div>
+              </div>
+              <div class="field"><label>상품명 / 정가</label><div class="g2"><input class="inp" value="다잇 7단 노트북 거치대"><input class="inp" value="31,900원"></div></div>
+            </div></div>
+
+            <div class="card sec"><div class="hd"><span class="num">3</span> 모집 · 일정</div><div class="bd">
+              <div class="g3">
+                <div class="field"><label>총 모집 인원 <span class="rq">*</span></label><input class="inp" value="30"></div>
+                <div class="field"><label>일 모집 인원</label><input class="inp" value="5"></div>
+                <div class="field"><label>스케줄</label><select><option>매일</option><option>주말 제외</option></select></div>
+              </div>
+              <div class="g2">
+                <div class="field"><label>시작일 <span class="rq">*</span></label><input class="inp" type="date" value="2026-05-26"></div>
+                <div class="field"><label>종료일 <span class="rq">*</span></label><input class="inp" type="date" value="2026-06-10"></div>
+              </div>
+            </div></div>
+
+            <div class="card sec"><div class="hd"><span class="num">4</span> 페이백</div><div class="bd">
+              <div class="g3">
+                <div class="field"><label>할인금액(구매환급)</label><input class="inp" value="9,900"></div>
+                <div class="field"><label>리뷰 포인트</label><input class="inp" value="1,000"></div>
+                <div class="field"><label>한달리뷰 포인트</label><input class="inp" value="0"></div>
+              </div>
+            </div></div>
+
+            <div class="card sec"><div class="hd"><span class="num">5</span> 리뷰 조건 · 가이드</div><div class="bd">
+              <div class="g2">
+                <div class="field"><label>사진 장수</label><input class="inp" value="3장 이상"></div>
+                <div class="field"><label>작성 기한</label><input class="inp" value="구매확정 후 7일"></div>
+              </div>
+              <div class="field"><label>필수 키워드</label><input class="inp" value="노트북 거치대, 높이조절"></div>
+              <div class="field"><label>가이드 / 주의사항</label><textarea>지정 키워드 1회 이상 포함, 실사용 사진 첨부</textarea></div>
+            </div></div>
+
+            <div class="card sec"><div class="hd"><span class="num">6</span> 노출 설정 <span class="imp">개선 #8</span></div><div class="bd">
+              <div class="g3">
+                <div class="field"><label>노출 여부</label><div class="seg"><span class="on">노출</span><span>숨김</span></div></div>
+                <div class="field"><label>상단 고정</label><div class="seg"><span>ON</span><span class="on">OFF</span></div></div>
+                <div class="field"><label>노출 가중치</label><input class="inp" value="50"></div>
+              </div>
+            </div></div>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+              <button class="btn o">임시저장</button>
+              <button class="btn g" style="padding:12px 26px;">캠페인 등록</button>
+            </div>
+          </div>
+
+          <div class="sticky">
+            <div class="card"><div class="hd">실시간 미리보기 <span style="font-size:11px;color:var(--sub);font-weight:600;">리뷰어 화면</span></div><div class="bd">
+              <div class="pv">
+                <div class="th"><div class="bd"><span>배송형</span><span class="ev">Event</span></div><div class="hrt">♡</div><div class="dd">D-15</div></div>
+                <div class="info"><div class="tt">다잇 7단 노트북 거치대 — 높이조절 스탠드</div>
+                  <div class="mt">디지털 · 쿠팡</div>
+                  <div class="bar"><i></i></div>
+                  <div class="pr"><span style="font-size:12px;color:var(--sub);">0명 신청 / 30명</span><span class="pay">페이백 9,900P</span></div>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--sub);margin-top:12px;line-height:1.7;">· 입력하는 즉시 카드/상세 미리보기에 반영<br>· 등록 전 리뷰어 시점으로 최종 확인</div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAMPAIGN MANAGE -->
+      <div class="ascreen" id="camp">
+        <div class="card" style="margin-bottom:16px;"><div class="bd">
+          <div class="filter">
+            <span class="fl">등록일 <span class="imp" style="margin-left:0;">#7</span></span><input class="fi" type="date" value="2026-05-01">
+            <span class="fl">종료일</span><input class="fi" type="date">
+            <span class="fl">상태</span><select class="fi"><option>전체</option><option>진행</option><option>마감</option><option>정지</option></select>
+            <span class="fl">검색 <span class="imp" style="margin-left:0;">#17</span></span>
+            <span style="display:flex;gap:6px;"><select class="fi" style="width:120px;"><option>묶음번호</option><option>캠페인명</option><option>캠페인번호</option></select><input class="fi" placeholder="48189"></span>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;"><button class="btn g">조회</button><button class="btn o">초기화</button></div>
+        </div></div>
+
+        <div class="ftabs">
+          <span class="tb on">진행중</span><span class="tb">마감</span><span class="tb">정지</span><span class="tb">전체</span><span class="tb">숨김 캠페인</span>
+          <span class="tb save">⭐ 내 기본 정렬 저장 <span class="imp" style="margin-left:0;">#11</span></span>
+        </div>
+
+        <div class="bulkbar">
+          <span class="cnt">선택 1건</span> · 일괄 작업
+          <span class="sp">
+            <button class="bb">숨기기</button>
+            <button class="bb">상태 변경</button>
+            <button class="bb">복사</button>
+            <button class="bb g" onclick="openPhoto()">포토 원고 자동지정 #14</button>
+            <button class="bb">엑셀 다운로드</button>
+          </span>
+        </div>
+        <div style="font-size:12.5px;color:var(--sub);margin-bottom:10px;">🔎 검색 시 자동으로 1페이지부터 다시 조회됩니다 <span class="imp" style="margin-left:0;">개선 #22</span></div>
+
+        <div class="card"><div class="bd" style="padding:0;">
+          <table class="t">
+            <thead><tr><th style="width:34px;"><span class="ck"></span></th><th>번호</th><th>묶음번호</th><th>캠페인명</th><th>모집</th><th>완료 <span class="imp" style="margin-left:0;">#15</span></th><th>상태</th><th>기간</th><th>관리 <span class="imp" style="margin-left:0;">#10</span></th></tr></thead>
+            <tbody>
+              <tr class="sel"><td><span class="ck on"></span></td><td>48190</td><td>48189</td><td>다잇 7단 노트북 거치대 (쿠팡)</td><td>2/30</td><td><b>2</b></td><td><span class="chip c-live">라이브</span></td><td>05.26~06.10</td><td><button class="btn o sm">숨기기</button> <button class="btn o sm">복사</button></td></tr>
+              <tr><td><span class="ck"></span></td><td>47873</td><td>45611</td><td>차외선차단 썬캡 (토트백)</td><td>3/3</td><td><b>3</b></td><td><span class="chip c-done">마감</span></td><td>05.19~05.19</td><td><button class="btn o sm">숨기기</button> <button class="btn o sm">복사</button></td></tr>
+              <tr style="opacity:.5;"><td><span class="ck"></span></td><td>47860</td><td>47859</td><td>듀라론 여름 냉감패드 (종료)</td><td>5/5</td><td><b>5</b></td><td><span class="chip c-hide">숨김</span></td><td>05.19~05.19</td><td><button class="btn o sm">복원</button></td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <!-- REVIEW APPROVE -->
+      <div class="ascreen" id="review">
+        <div class="note">🖱️ 행을 <b>드래그하거나 Shift+클릭</b>으로 범위 선택해 한 번에 승인합니다. 영수증은 확대·회전하며 주문정보와 나란히 대조합니다. <span class="imp" style="margin-left:0;">개선 #1 · #3</span></div>
+        <div class="rev">
+          <div class="card"><div class="hd">승인 대기 <span style="color:var(--sub);font-weight:600;font-size:13px;">2건 선택됨</span>
+            <span style="margin-left:auto;display:flex;gap:8px;"><button class="btn g sm">선택 승인</button><button class="btn o sm">선택 반려</button></span></div>
+            <div class="bd" style="padding:0;">
+            <table class="t">
+              <thead><tr><th style="width:34px;"><span class="ck on"></span></th><th>리뷰어</th><th>캠페인</th><th>유형</th><th>제출</th></tr></thead>
+              <tbody>
+                <tr class="sel"><td><span class="ck on"></span></td><td>한**</td><td>48190</td><td>영수증</td><td>05-29</td></tr>
+                <tr class="sel"><td><span class="ck on"></span></td><td>최**</td><td>48190</td><td>영수증</td><td>05-29</td></tr>
+                <tr><td><span class="ck"></span></td><td>민**</td><td>47873</td><td>리뷰</td><td>05-28</td></tr>
+                <tr><td><span class="ck"></span></td><td>권**</td><td>47873</td><td>리뷰</td><td>05-28</td></tr>
+              </tbody>
+            </table>
+            <div style="padding:9px 12px;font-size:12px;color:var(--sub);">↳ 드래그 범위 선택 · Shift+클릭 · 헤더 체크로 전체 선택</div>
+            </div>
+          </div>
+          <div class="card"><div class="hd">영수증 확인 <span class="imp">개선 #3</span></div><div class="bd">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="receipt"><div class="zoom"><span>＋</span><span>－</span><span>⟳</span></div></div>
+              <div class="match">
+                <div style="font-weight:800;margin-bottom:6px;">주문 정보 대조</div>
+                <div class="li"><span>주문번호</span><b>20260527-8842</b></div>
+                <div class="li"><span>결제금액</span><b>31,900원</b></div>
+                <div class="li"><span>구매일</span><b>2026.05.27</b></div>
+                <div class="li"><span>상품</span><b>노트북 거치대</b></div>
+                <div style="display:flex;gap:8px;margin-top:14px;"><button class="btn g" style="flex:1;">승인</button><button class="btn o" style="flex:1;">반려</button></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- MEMBER -->
+      <div class="ascreen" id="member">
+        <div class="card" style="margin-bottom:16px;"><div class="hd">한** 리뷰어 상세정보</div><div class="bd">
+          <table class="t"><thead><tr><th>이메일</th><th>연락처</th><th>리뷰참여</th><th>리뷰완료</th><th>미출금</th><th>상태</th></tr></thead>
+          <tbody><tr><td>review***@nate.com</td><td>010-****-3509</td><td><b>4</b></td><td>1</td><td>85,200원</td><td><span class="chip c-run">정상</span></td></tr></tbody></table>
+        </div></div>
+        <div class="row">
+          <div class="card" style="flex:1;min-width:420px;"><div class="hd">참여 캠페인 내역 <span class="imp">개선 #18</span></div><div class="bd" style="padding:0;">
+            <table class="t"><thead><tr><th>캠페인번호</th><th>캠페인명</th><th>참여일</th><th>상태</th><th>페이백</th></tr></thead>
+            <tbody>
+              <tr><td class="cno">48943</td><td>초록상회 프리미엄 수박</td><td>05.29</td><td><span class="chip c-wait">배송처리중</span></td><td>19,900P</td></tr>
+              <tr><td class="cno">44215</td><td>29일차 감자 간편 밀키트</td><td>05.29</td><td><span class="chip c-run">진행</span></td><td>1,000P</td></tr>
+              <tr><td class="cno">48426</td><td>와이에스코스 바디 클렌저</td><td>05.27</td><td><span class="chip c-run">진행</span></td><td>54,000P</td></tr>
+              <tr><td class="cno">22693</td><td>티나는마케팅 네일 케어</td><td>05.24</td><td><span class="chip c-done">완료</span></td><td>10,470P</td></tr>
+            </tbody></table>
+          </div></div>
+          <div class="card" style="width:360px;"><div class="hd">보유 스토어 계정 <span class="imp">개선 #21</span></div><div class="bd" style="padding:0;">
+            <table class="t"><thead><tr><th>스토어</th><th>계정</th><th>수취인</th></tr></thead>
+            <tbody>
+              <tr><td>쿠팡</td><td>gks***350</td><td>한**</td></tr>
+              <tr><td>네이버</td><td>gks***3509</td><td>한**</td></tr>
+            </tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- QNA -->
+      <div class="ascreen" id="qna">
+        <div class="note">문의 화면에 <b>회원 정보 + 스토어 계정</b>을 함께 표시하고, 작성 시 <b>캠페인·종류·담당자</b>가 분류되어 들어옵니다. <span class="imp" style="margin-left:0;">개선 #19 · #21</span></div>
+        <div class="card"><div class="bd" style="padding:0;">
+          <table class="t">
+            <thead><tr><th>번호</th><th>분류</th><th>문의자(회원/스토어)</th><th>캠페인</th><th>담당자</th><th>제목</th><th>상태</th></tr></thead>
+            <tbody>
+              <tr><td>193312</td><td><span class="chip c-live">배송</span></td><td>기**<br><span style="font-size:12px;color:var(--sub);">쿠팡 · kij***au</span></td><td class="cno">48190</td><td>화유인</td><td>배송 오류 조사 요청</td><td><span class="chip c-wait">답변대기</span></td></tr>
+              <tr><td>192652</td><td><span class="chip c-run">리뷰</span></td><td>홍**<br><span style="font-size:12px;color:var(--sub);">네이버 · jun***89</span></td><td class="cno">47873</td><td>화유인</td><td>포토리뷰 작성 문의</td><td><span class="chip c-done">완료</span></td></tr>
+              <tr><td>192556</td><td><span class="chip c-live">배송</span></td><td>전**<br><span style="font-size:12px;color:var(--sub);">쿠팡 · rkd***443</span></td><td class="cno">47860</td><td>리뷰팀</td><td>빠른 회신 부탁드립니다</td><td><span class="chip c-wait">회신대기</span></td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</div></div>
+
+<div class="modal" id="photoModal">
+  <div class="box">
+    <div class="mh">포토 원고 자동지정 <span class="imp" style="margin-left:8px;">#14</span><span class="x" onclick="closePhoto()">×</span></div>
+    <div class="mb">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <span class="tg"><span class="sw"></span> 리뷰 미작성자만 지정</span>
+        <span style="font-size:13px;color:var(--sub);">이미 리뷰를 완료한 참여자는 자동으로 제외됩니다.</span>
+      </div>
+      <table class="t"><thead><tr><th>참여자</th><th>리뷰 상태</th><th>포토 지정</th></tr></thead>
+      <tbody>
+        <tr><td>리뷰어 A</td><td><span class="chip c-done">리뷰완료</span></td><td style="color:#8a93a0;">— 제외</td></tr>
+        <tr><td>리뷰어 B</td><td><span class="chip c-wait">미작성</span></td><td style="color:var(--green-d);font-weight:800;">✔ 지정</td></tr>
+        <tr><td>리뷰어 C</td><td><span class="chip c-done">리뷰완료</span></td><td style="color:#8a93a0;">— 제외</td></tr>
+        <tr><td>리뷰어 D</td><td><span class="chip c-wait">미작성</span></td><td style="color:var(--green-d);font-weight:800;">✔ 지정</td></tr>
+      </tbody></table>
+      <div style="font-size:13px;color:var(--green-d);margin-top:10px;">→ 미작성자 2명에게만 포토리뷰가 지정됩니다. (완료자 재지정으로 인한 재작업·혼선 방지)</div>
+    </div>
+    <div class="mf"><button class="btn o" onclick="closePhoto()">취소</button><button class="btn g" onclick="closePhoto()">미작성자에게 지정</button></div>
+  </div>
+</div>
+
+<script>
+const TITLES={dash:'대시보드',new:'캠페인 등록',camp:'캠페인 관리',review:'리뷰 승인',member:'리뷰어 관리',qna:'1:1 문의'};
+function openPhoto(){document.getElementById('photoModal').classList.add('on');}
+function closePhoto(){document.getElementById('photoModal').classList.remove('on');}
+function go(s){
+  document.querySelectorAll('.side .nav a[data-s]').forEach(a=>a.classList.toggle('on',a.dataset.s===s));
+  document.querySelectorAll('.ascreen').forEach(x=>x.classList.toggle('on',x.id===s));
+  document.getElementById('ptitle').textContent=TITLES[s]||'';
+  document.querySelector('.content').scrollTop=0;
+}
+document.querySelectorAll('.side .nav a[data-s]').forEach(a=>{a.onclick=()=>go(a.dataset.s);});
+</script>
+</body>
+</html>
